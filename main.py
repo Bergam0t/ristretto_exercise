@@ -16,18 +16,20 @@ def main(page: Page):
     num_exercises = 6
 
     # global duration_exercise 
-    duration_exercise = 6
+    duration_exercise = 60
 
     def slider_changed_num_exercises(e):
         nonlocal num_exercises
         num_exercises = int(e.control.value)
-        print(num_exercises)
+        range_slider_num_exercises_label.value = f"Select the number of exercises (Current Value: {num_exercises})" 
+        # print(num_exercises)
         page.update()
 
     def slider_changed_duration(e):
         nonlocal duration_exercise
         duration_exercise = int(e.control.value)
-        print(duration_exercise)
+        range_slider_duration_label.value = f"Select the duration per exercise in seconds (Current Value: {duration_exercise} seconds)"
+        # print(duration_exercise)
         page.update()
 
     def show_progress_bar(e):
@@ -37,11 +39,11 @@ def main(page: Page):
         start_exercises_button.disabled = True
         page.update()
         for z in range(num_exercises):
-            exercise_pb_label.value = f"Work on exercise {z+1} for 60 seconds!"
-            for i in range(0, 60):
-                pb.value = i * (1/60)
+            exercise_pb_label.value = f"Work on exercise {z+1} ({selected_exercises['Name'].values[z]}) for {duration_exercise} seconds!"
+            for i in range(0, duration_exercise):
+                pb.value = i * (1/duration_exercise)
                 sleep(1)
-                exercise_pb_label.value = f"Work on exercise {z+1} for {60-i} more seconds!"
+                exercise_pb_label.value = f"Work on exercise {z+1} ({selected_exercises['Name'].values[z]}) for {duration_exercise-i} more seconds!"
                 page.update()
         add_exercise_button.disabled = False
         page.update()
@@ -60,36 +62,40 @@ def main(page: Page):
     )
 
     range_slider_duration = ft.Slider(
-        min=3,
-        max=30,
-        value=6,
-        divisions=30-3,
+        min=30,
+        max=60*2,
+        value=60,
+        divisions=int((120-30)/5),
         inactive_color=ft.colors.GREEN_300,
         active_color=ft.colors.GREEN_700,
         overlay_color=ft.colors.GREEN_100,
-        label="{value} minutes",
+        label="{value} seconds",
         on_change=slider_changed_duration
     )
 
     start_exercises_button = ft.ElevatedButton("Start Exercises", on_click=show_progress_bar)
     start_exercises_button.disabled = True
 
+    range_slider_duration_label = ft.Text(
+                    f"Select the duration per exercise in seconds (Current Value: {duration_exercise} seconds)",
+                    size=20,
+                    weight=ft.FontWeight.BOLD
+                )
+
+    range_slider_num_exercises_label = ft.Text(
+                    f"Select the number of exercises (Current Value: {num_exercises})",
+                    size=20,
+                    weight=ft.FontWeight.BOLD
+                )
+
     # add sliders for number of exercises and exercise duration
     page.add(
         ft.Column(
             controls=[
-                ft.Text(
-                    "Select the number of exercises",
-                    size=20,
-                    weight=ft.FontWeight.BOLD
-                ),
+                range_slider_num_exercises_label,
                 ft.Container(height=30),
                 range_slider_num_exercises,
-                ft.Text(
-                    "Select the duration",
-                    size=20,
-                    weight=ft.FontWeight.BOLD
-                ),
+                range_slider_duration_label,
                 ft.Container(height=30),
                 range_slider_duration,
             ],
@@ -97,9 +103,12 @@ def main(page: Page):
         )
     )
 
+    page.update()
+
 
     def update_exercise_list(e):
         nonlocal datatable
+        global selected_exercises
         selected_exercises = exercise_list_df.sample(num_exercises)
 
         new_datatable = ft.DataTable(columns=[
@@ -115,7 +124,7 @@ def main(page: Page):
                         cells=[
                             ft.DataCell(ft.Text(f"{row+1}")),
                             ft.DataCell(ft.Text(selected_exercises["Name"].values[row])), 
-                            ft.DataCell(ft.Text("60s"))
+                            ft.DataCell(ft.Text(f"{duration_exercise} seconds"))
                         ]
                         ) 
                     )   
@@ -160,7 +169,7 @@ def main(page: Page):
 
     datatable.visible = False
 
-    pb = ft.ProgressBar(width=300)
+    pb = ft.ProgressBar(width=500, bar_height=30)
     pb.visible = False
 
     exercise_pb_label = ft.Text("Work on exercise 1!")
