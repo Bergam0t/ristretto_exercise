@@ -37,15 +37,20 @@ def main(page: Page):
         pb.visible = True
         exercise_pb_label.visible = True
         start_exercises_button.disabled = True
+        pb.value = 0 
         page.update()
         for z in range(num_exercises):
             exercise_pb_label.value = f"Work on exercise {z+1} ({selected_exercises['Name'].values[z]}) for {duration_exercise} seconds!"
-            for i in range(0, duration_exercise):
+            page.update()
+            for i in range(1, duration_exercise):
                 pb.value = i * (1/duration_exercise)
                 sleep(1)
                 exercise_pb_label.value = f"Work on exercise {z+1} ({selected_exercises['Name'].values[z]}) for {duration_exercise-i} more seconds!"
                 page.update()
+            if z < num_exercises-1:
+                play_next_exercise_sound()
         add_exercise_button.disabled = False
+        play_exercise_complete_sound()
         page.update()
 
 
@@ -72,6 +77,18 @@ def main(page: Page):
         label="{value} seconds",
         on_change=slider_changed_duration
     )
+
+    change_exercise_sound = ft.Audio(src="https://github.com/Bergam0t/ristretto_exercise/raw/main/assets/162473__kastenfrosch__successful.mp3", autoplay=False)
+    exercise_completed_sound = ft.Audio(src="https://github.com/Bergam0t/ristretto_exercise/raw/main/assets/171671__leszek_szary__success-1.wav", autoplay=False)
+
+    page.overlay.append(change_exercise_sound)
+    page.overlay.append(exercise_completed_sound)
+
+    def play_next_exercise_sound():
+        change_exercise_sound.play()
+
+    def play_exercise_complete_sound():
+        exercise_completed_sound.play()
 
     start_exercises_button = ft.ElevatedButton("Start Exercises", on_click=show_progress_bar)
     start_exercises_button.disabled = True
