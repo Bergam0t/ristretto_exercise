@@ -1,6 +1,8 @@
 import flet as ft
 from flet import IconButton, Page, Row, TextField, icons, theme
 import pandas as pd
+from datetime import datetime
+from time import sleep
 
 def main(page: Page):
 
@@ -28,6 +30,22 @@ def main(page: Page):
         print(duration_exercise)
         page.update()
 
+    def show_progress_bar(e):
+        add_exercise_button.disabled = True
+        pb.visible = True
+        exercise_pb_label.visible = True
+        start_exercises_button.disabled = True
+        page.update()
+        for z in range(num_exercises):
+            exercise_pb_label.value = f"Work on exercise {z+1} for 60 seconds!"
+            for i in range(0, 60):
+                pb.value = i * (1/60)
+                sleep(1)
+                exercise_pb_label.value = f"Work on exercise {z+1} for {60-i} more seconds!"
+                page.update()
+        add_exercise_button.disabled = False
+        page.update()
+
 
     range_slider_num_exercises = ft.Slider(
         min=1,
@@ -37,7 +55,7 @@ def main(page: Page):
         inactive_color=ft.colors.GREEN_300,
         active_color=ft.colors.GREEN_700,
         overlay_color=ft.colors.GREEN_100,
-        label="{value}",
+        label="{value} exercises",
         on_change=slider_changed_num_exercises
     )
 
@@ -49,26 +67,28 @@ def main(page: Page):
         inactive_color=ft.colors.GREEN_300,
         active_color=ft.colors.GREEN_700,
         overlay_color=ft.colors.GREEN_100,
-        label="{value}",
+        label="{value} minutes",
         on_change=slider_changed_duration
     )
 
+    start_exercises_button = ft.ElevatedButton("Start Exercises", on_click=show_progress_bar)
+    start_exercises_button.disabled = True
 
+    # add sliders for number of exercises and exercise duration
     page.add(
         ft.Column(
-            # horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
                 ft.Text(
                     "Select the number of exercises",
                     size=20,
-                    weight=ft.FontWeight.BOLD,
+                    weight=ft.FontWeight.BOLD
                 ),
                 ft.Container(height=30),
                 range_slider_num_exercises,
                 ft.Text(
                     "Select the duration",
                     size=20,
-                    weight=ft.FontWeight.BOLD,
+                    weight=ft.FontWeight.BOLD
                 ),
                 ft.Container(height=30),
                 range_slider_duration,
@@ -106,13 +126,16 @@ def main(page: Page):
         # Update the reference to the current DataTable
         
         datatable = new_datatable
+        start_exercises_button.disabled = False
+        add_exercise_button.icon = icons.REFRESH
         page.update()
+
+    add_exercise_button = IconButton(icons.ADD, on_click=update_exercise_list)
 
     page.add(
         Row(
             [
-                IconButton(icons.ADD, on_click=update_exercise_list),
-                IconButton(icons.REFRESH, on_click=update_exercise_list)
+                add_exercise_button
             ],
             alignment="left",
             vertical_alignment="top"
@@ -136,6 +159,26 @@ def main(page: Page):
     page.add(datatable)
 
     datatable.visible = False
+
+    pb = ft.ProgressBar(width=300)
+    pb.visible = False
+
+    exercise_pb_label = ft.Text("Work on exercise 1!")
+    exercise_pb_label.visible = False
+
+    page.add(ft.Column([
+        exercise_pb_label, 
+        pb])
+        )
+
+    page.add(
+        start_exercises_button
+     )
+
+    page.update()
+        
+
+
     
     # def get_initial_exercise_list(e):
         
@@ -163,6 +206,9 @@ def main(page: Page):
     page.title = "Flet counter example"
     page.vertical_alignment = "top"
     page.theme = theme.Theme(color_scheme_seed="green")
+    page.update()
+
+
     page.update()
 
     
