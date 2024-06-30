@@ -51,6 +51,9 @@ def main(page: Page):
                 play_next_exercise_sound()
         add_exercise_button.disabled = False
         play_exercise_complete_sound()
+        exercise_pb_label.value = "Complete! Well done!"
+        pb.value = 1
+        start_exercises_button.disabled = False
         page.update()
 
 
@@ -104,6 +107,20 @@ def main(page: Page):
                     size=20,
                     weight=ft.FontWeight.BOLD
                 )
+    
+    title_text = ft.Text(value="Welcome to Ristretto Exercise!", color="green", size=40, weight='bold')
+    subheader_text = ft.Text("Take a mini shot of exercise to wake yourself up!", color="white")
+
+    img = ft.Image(
+        src=f"assets/ristretto.png",
+        width=100,
+        height=100,
+        fit=ft.ImageFit.CONTAIN,
+    )
+
+    page.add(Row([img, title_text], vertical_alignment=ft.CrossAxisAlignment.END))
+
+    page.add(subheader_text)
 
     # add sliders for number of exercises and exercise duration
     page.add(
@@ -154,13 +171,16 @@ def main(page: Page):
         datatable = new_datatable
         start_exercises_button.disabled = False
         add_exercise_button.icon = icons.REFRESH
+        add_update_label.value = "Click this button to generate a new set of exercises"
         page.update()
 
+    add_update_label = ft.Text ("Click this button to generate your exercises")
     add_exercise_button = IconButton(icons.ADD, on_click=update_exercise_list)
 
     page.add(
         Row(
             [
+                add_update_label,
                 add_exercise_button
             ],
             alignment="left",
@@ -229,14 +249,10 @@ def main(page: Page):
         
     
 
-    page.title = "Flet counter example"
+    page.title = "Ristretto Exercise"
     page.vertical_alignment = "top"
     page.theme = theme.Theme(color_scheme_seed="green")
     page.update()
-
-
-    page.update()
-
     
     
 
@@ -267,4 +283,4 @@ def main(page: Page):
     # page.controls.append(t)
     page.update()
 
-ft.app(target=main)
+ft.app(target=main, assets_dir="assets")
