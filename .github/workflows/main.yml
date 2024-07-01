@@ -1,5 +1,19 @@
-- name: Deploy
-  uses: peaceiris/actions-gh-pages@v4
-  with:
-    github_token: ${{ secrets.GITHUB_TOKEN }}
-    publish_dir: ./build/web
+name: GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Set a branch name to trigger deployment
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
