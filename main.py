@@ -108,9 +108,28 @@ def main(page: Page):
                     weight=ft.FontWeight.BOLD
                 )
     
-    title_text = ft.Text(value="Welcome to Ristretto Exercise!", color="green", size=40, weight='bold')
-    subheader_text = ft.Text("Take a mini shot of exercise to wake yourself up!", color="white")
+    def highlight_link(e):
+        e.control.style.color = ft.colors.BLUE
+        e.control.update()
 
+    def unhighlight_link(e):
+        e.control.style.color = None
+        e.control.update()
+    
+    title_text = ft.Text(value="Welcome to Ristretto!", color="green", size=40, weight='bold')
+    subheader_text = ft.Text("Take a mini shot of exercise to wake yourself up!", color="white")
+    info_tooltip =  ft.Tooltip(
+            message= ft.Text(spans=[ft.TextSpan(
+                    "Ristretto icons created by Freepik - Flaticon",
+                    ft.TextStyle(decoration=ft.TextDecoration.UNDERLINE),
+                    url="https://www.flaticon.com/free-icons/ristretto",
+                    on_enter=highlight_link,
+                    on_exit=unhighlight_link
+                )]),
+            content=ft.Icon(icons.INFO),
+            padding=20
+    )
+    
     img = ft.Image(
         src=f"assets/ristretto.png",
         width=100,
@@ -118,7 +137,7 @@ def main(page: Page):
         fit=ft.ImageFit.CONTAIN,
     )
 
-    page.add(Row([img, title_text], vertical_alignment=ft.CrossAxisAlignment.END))
+    page.add(Row([img, title_text, info_tooltip], vertical_alignment=ft.CrossAxisAlignment.END))
 
     page.add(subheader_text)
 
