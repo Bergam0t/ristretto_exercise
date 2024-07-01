@@ -4,11 +4,14 @@ on:
   push:
     branches:
       - main  # Set a branch name to trigger deployment
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 jobs:
   deploy:
     runs-on: ubuntu-22.04
-    permissions:
-      contents: write
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
@@ -16,4 +19,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/web
+          publish_dir: './build/web'
