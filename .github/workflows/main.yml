@@ -5,12 +5,13 @@ on:
     branches:
       - main  # Set a branch name to trigger deployment
   workflow_dispatch:
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+
 jobs:
   deploy:
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     runs-on: ubuntu-22.04
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
