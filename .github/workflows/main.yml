@@ -17,6 +17,8 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          lfs: true # Fetches LFS data
     
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
